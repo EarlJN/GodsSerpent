@@ -1,4 +1,3 @@
-
 import pygame
 import time
 from pygame.locals import *
@@ -7,55 +6,48 @@ import random
 
 pygame.init()
 
-#Fill Colors // Used for backgrounds and Texts
-fWhite =(255,255,255)
-fRed = (255,000,000)
-fGreen = (0 , 105 , 0)
-bGreen = (0 , 255 , 0)
-ecSnake = (0,155,0)
-fGray = (105,105,105)
-bGray = (192,192,192)
-fBlack = (0,0,0)
+# Game Audio
+game_music = pygame.mixer.Sound('Gamefiles/gamesong.ogg')
 
-#Entity Colors // Used for entities 
-ecSnake = (0,155,0)
+# Game Sprites
+snake_head = pygame.image.load('Gamefiles/SHead00.png')
+snake_tail = pygame.image.load('Gamefiles/STail00.png')
+game_background = pygame.image.load('Gamefiles/background.png')
+game_icon = pygame.image.load('Gamefiles/gameicon.png')
+start_background = pygame.image.load('Gamefiles/StartBackground.png')
+apple = pygame.image.load('Gamefiles/Holywaterapple.png')
 
-#Variables // d = Dispplay Pixels
-d_Width = 800
-d_Height = 600 
-d_Blocks = 20
-
-#Musics
-gamemusic = pygame.mixer.Sound('Gamefiles/gamesong.ogg')
-#Sprites
-SnakeHead00 = pygame.image.load('Gamefiles/SHead00.png')
-STail00 = pygame.image.load('Gamefiles/STail00.png')
-displaybackground = pygame.image.load('Gamefiles/background.png')
-gicon = pygame.image.load('Gamefiles/gameicon.png')
-startbackground = pygame.image.load('Gamefiles/StartBackground.png')
-imgapple = pygame.image.load('Gamefiles/Holywaterapple.png')
-
-pygame.display.set_icon(gicon)
-
-
-direction = "right"
-tdirection = "right"
-gDisplay = pygame.display.set_mode((800,600))
+gDisplay = pygame.display.set_mode((800, 600))
 pygame.display.set_caption('God\'s Serpent')
+FPS = 15
+TZ = pygame.time.Clock()
 
-FPS = 15   
-smallfont = pygame.font.Font("Gamefiles/scaryfont.ttf" , 25)
-mediumfont = pygame.font.Font("Gamefiles/scaryfont.ttf" , 50)
-largefont = pygame.font.Font("Gamefiles/scaryfont.ttf" , 150)# Font Style
-pbutton = pygame.font.Font("Gamefiles/playgamebutton.otf" , 20)
+# Colors
+white = (255, 255, 255)
+red = (255, 000, 000)
+light_green = (0, 105, 0)
+dark_green = (0, 255, 0)
+body_color = (0, 155, 0)
+light_gray = (105, 105, 105)
+dark_gray = (192, 192, 192)
+black = (0, 0, 0)
+
+# Window Size
+width = 800
+height = 600
+blocks = 20
+
+# Text Fonts and Sizes
+small_font = pygame.font.Font("Gamefiles/scaryfont.ttf", 25)
+medium_font = pygame.font.Font("Gamefiles/scaryfont.ttf", 50)
+large_font = pygame.font.Font("Gamefiles/scaryfont.ttf", 150)  # Font Style
+play_button = pygame.font.Font("Gamefiles/playgamebutton.otf", 20)
+
+# Directions
+direction = "right"
 
 
-TZ = pygame.time.Clock() 
-#Functions   
 def pause():
-
-    
-
     paused = True
     while paused:
         for event in pygame.event.get():
@@ -70,33 +62,28 @@ def pause():
                 elif event.key == pygame.K_q:
                     pygame.quit()
                     quit()
-                    
-        dMessage("PAUSED" , fWhite , -100 , size="large")
-        dMessage("press c to continue or q to quit" , fWhite ,25)
-    
+
+        show_message("PAUSED", white, -100, size="large")
+        show_message("press c to continue or q to quit", white, 25)
+
         pygame.display.update()
         TZ.tick(5)
 
-    
 
 def score(score):
-    txt = mediumfont.render("Score: " + str(score) , True , fWhite)
-    gDisplay.blit(txt, [0,0])
-
-    
-def SpawnApple():
-    d_Apple_x = round(random.randrange(0 , d_Width - d_Blocks)) 
-    d_Apple_y = round(random.randrange(0 , d_Height - d_Blocks))
-
-    return d_Apple_x , d_Apple_y
+    txt = medium_font.render("Score: " + str(score), True, white)
+    gDisplay.blit(txt, [0, 0])
 
 
-    
+def spawn_apple():
+    apple_x = round(random.randrange(0, width - blocks))
+    apple_y = round(random.randrange(0, height - blocks))
 
-    
+    return apple_x, apple_y
+
+
 def start_menu():
     smenu = True
-
 
     while smenu:
 
@@ -104,234 +91,190 @@ def start_menu():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-                
 
-                                
-        gDisplay.blit(startbackground , [0,0])
+        gDisplay.blit(start_background, [0, 0])
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
-        pygame.draw.rect(gDisplay , fGray , (550,450,100,50))
-        #The most ghetto way ive ever done in to my code        
-        if 150 + 100  > mouse[0] > 150 and 450 + 50 > mouse[1] > 450:
-            pygame.draw.rect(gDisplay , bGreen , (150,450,100,50))
+        pygame.draw.rect(gDisplay, light_gray, (550, 450, 100, 50))
+        # The most ghetto way ive ever done in to my code
+        if 150 + 100 > mouse[0] > 150 and 450 + 50 > mouse[1] > 450:
+            pygame.draw.rect(gDisplay, dark_green, (150, 450, 100, 50))
             if 150 + 100 > mouse[0] > 150 and 450 + 50 > mouse[1] > 450:
                 if click[0] == 1:
-                    StartGame()
-                    
+                    start_game()
+
         else:
-            pygame.draw.rect(gDisplay , fGreen , (150,450,100,50))
-            
-        if 550 + 100 > mouse [0] > 500 and 450 + 50 > mouse[1] > 450:
-            pygame.draw.rect(gDisplay , bGray , (550,450,100,50))
-            
-            if 550+100 > mouse[0] > 500 and 450 + 50 > mouse[1]>450:
+            pygame.draw.rect(gDisplay, light_green, (150, 450, 100, 50))
+
+        if 550 + 100 > mouse[0] > 500 and 450 + 50 > mouse[1] > 450:
+            pygame.draw.rect(gDisplay, dark_gray, (550, 450, 100, 50))
+
+            if 550 + 100 > mouse[0] > 500 and 450 + 50 > mouse[1] > 450:
                 if click[0] == 1:
                     pygame.quit()
                     quit()
 
-                    
+        show_message("Play                                        ", black, y_dis=175, size="mediumButton")
+        show_message("                                        Quit", black, y_dis=175, size="mediumButton")
 
-                    
-                
-##        if 550+100 > mouse[0] > 500 and 450+50 > mouse[1] > 450:
-##        pygame.draw.rect(gDisplay , fGray , (550,450,100,50))
-##        if 550+100 > mouse[0] > 500 and 450 + 50 > mouse[1] > 450:
-##             pygame.draw.rect(gDisplay , bGray , (550,450,100,50))                      
-#Ghetto Coding LOL! the dirtiest trick ive done to fit it inside the play box this is disgusting start of my programming career
-            
-        dMessage("Play                                        " , fBlack , y_dis=175  , size="mediumButton")
-        dMessage("                                        Quit" , fBlack , y_dis=175  , size="mediumButton")
-
-       # pygame.draw.rect(gDisplay , fGray , (550,450,100,50))
-        dMessage("                                        Quit" , fBlack , y_dis=175  , size="mediumButton")
+        # pygame.draw.rect(gDisplay , fGray , (550,450,100,50))
+        show_message("                                        Quit", black, y_dis=175, size="mediumButton")
 
         pygame.display.update()
         TZ.tick(15)
-        
 
-def txt_objects(text,color,size):
-    if size == "small":       
-        textSurface = smallfont.render(text , True , color)
-    elif size == "medium":       
-        textSurface = mediumfont.render(text , True , color)
+
+def txt_objects(text, color, size):
+    if size == "small":
+        text_surface = small_font.render(text, True, color)
+    elif size == "medium":
+        text_surface = medium_font.render(text, True, color)
     elif size == "mediumButton":
-        textSurface = pbutton.render(text , True , color)
-    elif size == "large":       
-        textSurface = largefont.render(text , True , color)
-    return textSurface , textSurface.get_rect()
+        text_surface = play_button.render(text, True, color)
+    elif size == "large":
+        text_surface = large_font.render(text, True, color)
 
-def dMessage(msg , color , y_dis=0 , size="small"):
-    textSurf , textRect = txt_objects(msg,color, size)
-    textRect.center = (d_Width / 2) , (d_Height / 2) + y_dis
-    gDisplay.blit(textSurf , textRect)
+    return text_surface, text_surface.get_rect()
 
-#    dText = FStyle.render(msg , True , color)
-#    gDisplay.blit(dText , [d_Width / 2 , d_Height / 2])
 
-                       
-def Serpent(d_Blocks , SList):
+def show_message(msg, color, y_dis=0, size="small"):
+    text_surf, text_rect = txt_objects(msg, color, size)
+    text_rect.center = (width / 2), (height / 2) + y_dis
+    gDisplay.blit(text_surf, text_rect)
 
+
+def serpent(block, lists):
     if direction == "right":
-        SHead = pygame.transform.rotate(SnakeHead00 , 270)
+        head = pygame.transform.rotate(snake_head, 270)
     if direction == "left":
-        SHead = pygame.transform.rotate(SnakeHead00 , 90)
+        head = pygame.transform.rotate(snake_head, 90)
     if direction == "up":
-        SHead = SnakeHead00
+        head = snake_head
     if direction == "down":
-        SHead = pygame.transform.rotate(SnakeHead00 , 180)
+        head = pygame.transform.rotate(snake_head, 180)
+
+    gDisplay.blit(head, (lists[-1][0], lists[-1][1]))
+
+    for XY in lists[:-1]:
+        pygame.draw.rect(gDisplay, body_color, [XY[0], XY[1], block, block])
 
 
-    if tdirection == "right":
-        STail = pygame.transform.rotate(STail00 , 270)
-    if tdirection == "left":
-        STail = pygame.transform.rotate(STail00 , 90)
-    if tdirection == "up":
-        STail = STail00
-    if tdirection == "down":
-        STail = pygame.transform.rotate(STail00 , 180)
-
-    
-     
-
-    gDisplay.blit(SHead , (SList[-1][0] , SList[-1][1]))
-    gDisplay.blit(STail00 ,(SList[0][0],SList[0][1]))
-
-    for XY in SList[:-1]:
-        pygame.draw.rect(gDisplay , ecSnake , [XY[0],XY[1],d_Blocks,d_Blocks])
-        gDisplay.blit(STail00 ,(SList[0][0],SList[0][1] , d_Blocks , d_Blocks))
-##    for XnY in SList[0]:
-##        gDisplay.blit(STail00 ,(SList[0][0],SList[0][1]))
-
-    
-
-
-def StartGame():
-    pygame.mixer.Sound.play(gamemusic)
-    gExit = False
-    gOver = False
+def start_game():
+    pygame.mixer.Sound.play(game_music)
+    game_quit = False
+    game_over = False
     global direction
     direction = "right"
-    global tdirection
-    
-    GP_x = d_Width / 2  
-    
-    GP_y = d_Height / 2 
-    
-    GP_x_m = 20 
-    
-    GP_y_m = 0 
 
-    SList = []
+    x_line = width / 2
 
-    SLength = 2
+    y_line = height / 2
 
-    d_Apple_x , d_Apple_y = SpawnApple()
-  
+    x_move = 20
 
- 
-    while not gExit:
+    y_move = 0
 
-               
-        while gOver == True:
-            gDisplay.fill(fBlack)
-            dMessage("You Died", fRed , -50 , size="large")
-            dMessage("Remember Jesus died for your sin , Try again", fRed , 50)
+    snake_length = []
+
+    starting_length = 1
+
+    apple_x, apple_y = spawn_apple()
+
+    while not game_quit:
+
+        while game_over == True:
+            gDisplay.fill(black)
+            show_message("You Died", red, -50, size="large")
+            show_message("Remember Jesus died for your sin , Try again", red, 50)
             pygame.display.update()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    gExit = True
-                    gOver = False
-                    
+                    game_quit = True
+                    game_over = False
+
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_q:
-                        gExit = True
-                        gOver = False
+                        game_quit = True
+                        game_over = False
                     if event.key == pygame.K_c:
-                        StartGame()
-            
-                                            
+                        start_game()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                gExit = True
-                
+                game_quit = True
+
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
+                if event.key == pygame.K_LEFT and direction != "right":
                     direction = "left"
-                    tdirection = "left"
-                    GP_x_m = - d_Blocks 
-                    GP_y_m = 0
-                    
-                elif event.key == pygame.K_RIGHT:
+                    x_move = - blocks
+                    y_move = 0
+
+                elif event.key == pygame.K_RIGHT and direction != "left":
                     direction = "right"
-                    tdirection = "right"
-                    GP_x_m = d_Blocks 
-                    GP_y_m = 0
-                        
-                elif event.key == pygame.K_UP:
+                    x_move = blocks
+                    y_move = 0
+
+                elif event.key == pygame.K_UP and direction != "down":
                     direction = "up"
-                    tdirection = "up"
-                    GP_y_m = - d_Blocks 
-                    GP_x_m = 0
-                    
-                elif event.key == pygame.K_DOWN:
+                    y_move = - blocks
+                    x_move = 0
+
+                elif event.key == pygame.K_DOWN and direction != "up":
                     direction = "down"
-                    tdirection = "down"
-                    GP_y_m = d_Blocks 
-                    GP_x_m = 0
+                    y_move = blocks
+                    x_move = 0
 
                 elif event.key == pygame.K_p:
                     pause()
-                    
-        if GP_x >= d_Width  or GP_x < 0 or GP_y >= d_Height or GP_y < 0:
-                gOver = True
-                
-        #Game Structs
-                
-        GP_x += GP_x_m
-        GP_y += GP_y_m
-        gDisplay.blit(displaybackground , [0,0])
+
+        if x_line >= width or x_line < 0 or y_line >= height or y_line < 0:
+            game_over = True
+
+        # Game Structs
+
+        x_line += x_move
+        y_line += y_move
+        gDisplay.blit(game_background, [0, 0])
         d_Apple_Thickness = 30
-        gDisplay.blit(imgapple, (d_Apple_x , d_Apple_y))
+        gDisplay.blit(apple, (apple_x, apple_y))
         SHead = []
-        SHead.append(GP_x)
-        SHead.append(GP_y)
-        SList.append(SHead)
+        SHead.append(x_line)
+        SHead.append(y_line)
+        snake_length.append(SHead)
 
-        if len(SList) > SLength:
-            del SList[0]
+        if len(snake_length) > starting_length:
+            del snake_length[0]
 
-        for eachPixel in SList[:-1]:
+        for eachPixel in snake_length[:-1]:
             if eachPixel == SHead:
-                gOver = True
+                game_over = True
 
-       
-        
-                
-        Serpent(d_Blocks , SList )
+        serpent(blocks, snake_length)
 
-        score(SLength-2)
+        score(starting_length - 1)
         pygame.display.update()
 
+        if x_line > apple_x and x_line < apple_x + d_Apple_Thickness or x_line + blocks > apple_x and x_line + blocks < apple_x + d_Apple_Thickness:
+            if y_line > apple_y and y_line < apple_y + d_Apple_Thickness or y_line + blocks > apple_y and y_line + blocks < apple_y + d_Apple_Thickness:
+                apple_x, apple_y = spawn_apple()
+                starting_length += 1
 
-        if GP_x > d_Apple_x and GP_x < d_Apple_x + d_Apple_Thickness or GP_x + d_Blocks > d_Apple_x and GP_x + d_Blocks < d_Apple_x + d_Apple_Thickness:
-            if GP_y > d_Apple_y and GP_y < d_Apple_y + d_Apple_Thickness or GP_y + d_Blocks > d_Apple_y and GP_y + d_Blocks < d_Apple_y + d_Apple_Thickness:
-                d_Apple_x , d_Apple_y = SpawnApple()
-                SLength += 1
-                
-            elif GP_y + d_Blocks > d_Apple_y and GP_y + d_Blocks < d_Apple_y + d_Apple_Thickness:
-                d_Apple_x , d_Apple_y = SpawnApple()
-                SLength += 1
-                
-            
-        
-        
+            elif y_line + blocks > apple_y and y_line + blocks < apple_y + d_Apple_Thickness:
+                apple_x, apple_y = spawn_apple()
+                starting_length += 1
+
         TZ.tick(FPS)
-                
-       
-    pygame.quit()
-    quit()
 
-start_menu()
-StartGame()
+    pygame.quit()
+    game_quit()
+
+
+def main():
+    start_menu()
+
+
+if __name__ == "__main__":
+    main()
+
 
